@@ -10,7 +10,7 @@ Promise.all([
   faceapi.nets.ageGenderNet.loadFromUri("./models/")
 ]).then(initVideo);
 
-// Face Detection and Emotion Detect
+// Face Detection and Emotion/Age/Gender Detect
 
 video.addEventListener("play", () => {
   setInterval(async () => {
@@ -19,7 +19,6 @@ video.addEventListener("play", () => {
       .withFaceLandmarks()
       .withFaceExpressions()
 			.withAgeAndGender();
-			console.log(detections)
     if (detections) {
 			const startingModel = scene.getObjectByName('header')
 			const startingtext = "Your Results"
@@ -73,21 +72,31 @@ video.addEventListener("play", () => {
 			const text = "Gathering Results"
 			const name = "header"
 			const xloc = -670
-			const yloc = 350
+      const yloc = 350
+      const age = scene.getObjectByName('ageModel')
+      const gender = scene.getObjectByName('genderModel')
+      const emotion = scene.getObjectByName('emotion')
 			const existingModel = scene.getObjectByName(name)
 				if(existingModel) {
 					scene.remove(existingModel)
 					animate()
-				}
+        }
+        if(age) {
+          scene.remove(age)
+        }
+        if (gender) {
+          scene.remove(gender)
+        }
+        if(emotion) {
+          scene.remove(emotion)
+        }
+
 			initText(text,name, xloc, yloc)
 		}
   }, 10000);
 });
 
-// AR Setup
-
-// initVideo();
-// animateVideo();
+// 3D Setup
 
 const camera = new THREE.PerspectiveCamera(
   65,
@@ -146,10 +155,23 @@ function onWindowResize() {
 }
 function animate() {
 	requestAnimationFrame(animate);
-	const header = scene.getObjectByName('header')
+  const header = scene.getObjectByName('header')
+  const age = scene.getObjectByName('ageModel')
+  const gender = scene.getObjectByName('genderModel')
+  const emotion = scene.getObjectByName('emotion')
 	if(header) {
-	header.rotation.x += .07
-	}
+	header.rotation.x += .03
+  }
+  if(age) {
+    age.rotation.y += .03
+  }
+  if (gender) {
+    gender.rotation.y += .03
+  }
+  if (emotion) {
+    emotion.rotation.x += .03
+  }
+
   render();
 }
 function render() {
